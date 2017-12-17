@@ -6,10 +6,30 @@
 
 #include <SFML/Graphics.hpp>
 
+const std::string lvlMapStr =
+        "######                   \
+     #   p               \
+     #                   \
+     #                   \
+     #                   \
+     #                   \
+     #                   \
+     ###########|########\
+     #          |        \
+     ####################";
+
 void clearTexture(sf::Texture &t) {
     sf::Vector2u size = t.getSize();
     std::vector<sf::Uint8> data( size.x * size.y * 4, 0);
     t.update(data.data());
+}
+
+bool onSolidGround(const std::string &lvlMap, int lvlPitch, const sf::Vector2f &point) {
+    int x = std::floor(point.x / 32);
+    int y = std::floor(point.y / 32);
+    if (x < 0 || y < 0) return false;
+
+    return lvlMap[y * lvlPitch + x] == '#';
 }
 
 class Player : public sf::Drawable {
@@ -98,19 +118,26 @@ class Player : public sf::Drawable {
                         kv.second();
 
             }
+        sf::FloatRect pos = sprite.getGlobalBounds();
+        //detect collision with the level
+        float bY = pos.top + pos.height;
+        float blX = pos.left;
+        float brX = pos.left + 16;
 
-            playerJump();
-            move(0, velocity.y);
+        if (onSolidGround(lvlMapStr, 25, sf::Vector2f(blX, bY)) ||
+            onSolidGround(lvlMapStr, 25, sf::Vector2f(brX, bY))) {
+            isJumping = false;
+            velocity.y = 0;
+        } else {
 
-            sf::FloatRect pos = sprite.getGlobalBounds();
-            if (std::floor(pos.top + pos.height) >= 200) {
-                velocity.y = 0;
-                sprite.setPosition(pos.left, 200 - pos.height);
-                isJumping = false;
-            } else {
-                velocity.y += 0.3;
-            }
+            velocity.y += 0.3;
         }
+
+        // detect fall through the floor
+        if (std::floor(bY) >= 500) {
+            sprite.setPosition(spawn.x, spawn.y - pos.height);
+        }
+    }
 };
 
 int main() {
@@ -130,19 +157,6 @@ int main() {
     window.setFramerateLimit(60);
 
     Player player(window);
-
-    std::string lvlMapStr =
-"####                     \
-     #   p               \
-     #                   \
-     #                   \
-     #                   \
-     #                   \
-     #                   \
-     ###########|########\
-     #          |        \
-     ####################";
-
 
     auto lvlTexture = sf::Texture();
     lvlTexture.create(32 * 25, 32 * 10);
