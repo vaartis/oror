@@ -6,6 +6,12 @@
 
 #include <SFML/Graphics.hpp>
 
+void clearTexture(sf::Texture &t) {
+    sf::Vector2u size = t.getSize();
+    std::vector<sf::Uint8> data( size.x * size.y * 4, 0);
+    t.update(data.data());
+}
+
 class Player : public sf::Drawable {
     private:
         sf::Clock walkAnimationTimer;
@@ -140,6 +146,7 @@ int main() {
 
     auto lvlTexture = sf::Texture();
     lvlTexture.create(32 * 25, 32 * 10);
+    clearTexture(lvlTexture);
 
     int j = 0, i = 0;
     for (int p = 0; p < lvlMapStr.length(); p++) {
