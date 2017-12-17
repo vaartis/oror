@@ -33,91 +33,93 @@ bool onSolidGround(const std::string &lvlMap, int lvlPitch, const sf::Vector2f &
 }
 
 class Player : public sf::Drawable {
-    private:
-        sf::Clock walkAnimationTimer;
-    public:
-        sf::RenderWindow &window;
+private:
+    sf::Clock walkAnimationTimer;
+public:
+    sf::RenderWindow &window;
 
-        sf::Texture fullGirl;
-        sf::Sprite sprite;
+    sf::Texture fullGirl;
+    sf::Sprite sprite;
 
-        sf::Vector2f velocity;
+    sf::Vector2f velocity;
+    sf::Vector2i spawn {0, 0};
 
-        bool isJumping = true;
+    bool isJumping = true;
 
-        Player(sf::RenderWindow &wnd) : window(wnd) {
-            fullGirl.loadFromFile("girl.png");
-            sprite.setTexture(fullGirl);
+    Player(sf::RenderWindow &wnd) : window(wnd) {
+        fullGirl.loadFromFile("girl.png");
+        sprite.setTexture(fullGirl);
 
-            sf::IntRect rect(0, 0, 47, 53);
-            sprite.setTextureRect(rect);
+        sf::IntRect rect(0, 0, 47, 53);
+        sprite.setTextureRect(rect);
+    }
+
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
+        target.draw(sprite);
+    }
+
+    void move(float x, float y) {
+        sprite.move(x, y);
+    }
+
+    void playerJump() {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !isJumping) {
+            isJumping = true;
+            velocity.y = -10;
         }
+    }
 
+    void everyFrame() {
+        using SKK = sf::Keyboard::Key;
 
-        void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
-            target.draw(sprite);
-        }
+        std::map<sf::Keyboard::Key, std::function<void()>> keyActions {
+            {SKK::Right, [&]() {
+                    sprite.setOrigin({0, 0});
+                    sprite.setScale({1, 1});
 
-        void move(float x, float y) {
-            sprite.move(x, y);
-        }
+                    if (walkAnimationTimer.getElapsedTime().asSeconds() >= 0.1) {
+                        sf::IntRect rect = sprite.getTextureRect();
+                        if (rect.left == 47 * 4) {
+                            rect.left = 0;
+                        } else {
+                            rect.left = 47 * ((rect.left / 47) + 1);
+                        }
+                        sprite.setTextureRect(rect);
 
-        void playerJump() {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !isJumping) {
-                isJumping = true;
-                velocity.y = -10;
+                        walkAnimationTimer.restart();
+                    }
+
+                    move(3, 0);
+                }},
+                {SKK::Left, [&]() {
+                        sprite.setOrigin({sprite.getLocalBounds().width, 0});
+                        sprite.setScale({-1, 1});
+
+                        if (walkAnimationTimer.getElapsedTime().asSeconds() >= 0.1) {
+                            sf::IntRect rect = sprite.getTextureRect();
+                            if (rect.left == 47 * 4) {
+                                rect.left = 0;
+                            } else {
+                                rect.left = 47 * ((rect.left / 47) + 1);
+                            }
+                            sprite.setTextureRect(rect);
+
+                            walkAnimationTimer.restart();
+                        }
+
+                        move(-3, 0);
+                    }}
+        };
+
+        for (const auto &kv : keyActions) {
+            if (sf::Keyboard::isKeyPressed(kv.first)) {
+                kv.second();
             }
         }
 
-        void everyFrame() {
-            {
-                using SKK = sf::Keyboard::Key;
+        playerJump();
+        move(0, velocity.y);
 
-                std::map<sf::Keyboard::Key, std::function<void()>> keyActions {
-                    {SKK::Right, [&]() {
-                                    sprite.setOrigin({0, 0});
-                                    sprite.setScale({1, 1});
-
-                                     if (walkAnimationTimer.getElapsedTime().asSeconds() >= 0.1) {
-                                         sf::IntRect rect = sprite.getTextureRect();
-                                         if (rect.left == 47 * 4) {
-                                             rect.left = 0;
-                                         } else {
-                                             rect.left = 47 * ((rect.left / 47) + 1);
-                                         }
-                                         sprite.setTextureRect(rect);
-
-                                         walkAnimationTimer.restart();
-                                     }
-
-                                     move(3, 0);
-                                 }},
-                    {SKK::Left, [&]() {
-                                    sprite.setOrigin({sprite.getLocalBounds().width, 0});
-                                    sprite.setScale({-1, 1});
-
-                                    if (walkAnimationTimer.getElapsedTime().asSeconds() >= 0.1) {
-                                        sf::IntRect rect = sprite.getTextureRect();
-                                        if (rect.left == 47 * 4) {
-                                            rect.left = 0;
-                                        } else {
-                                            rect.left = 47 * ((rect.left / 47) + 1);
-                                        }
-                                        sprite.setTextureRect(rect);
-
-                                        walkAnimationTimer.restart();
-                                    }
-
-
-                                    move(-3, 0);
-                                }}
-                };
-
-                for (const auto &kv : keyActions)
-                    if (sf::Keyboard::isKeyPressed(kv.first))
-                        kv.second();
-
-            }
         sf::FloatRect pos = sprite.getGlobalBounds();
         //detect collision with the level
         float bY = pos.top + pos.height;
@@ -171,15 +173,16 @@ int main() {
         j = p % 25;
 
         switch (lvlMapStr[p]) {
-            case '#':
-                lvlTexture.update(groundImage, 32 * j, 32 * i);
-                break;
-            case '|':
-                lvlTexture.update(ladderImage, 32 * j, 32 * i);
-                break;
-            case 'p':
-                player.sprite.setPosition(32 * j, 32 * i);
-                break;
+        case '#':
+            lvlTexture.update(groundImage, 32 * j, 32 * i);
+            break;
+        case '|':
+            lvlTexture.update(ladderImage, 32 * j, 32 * i);
+            break;
+        case 'p':
+            player.spawn = sf::Vector2i(32 * j, 32 * i);
+            player.sprite.setPosition(32 * j, 32 * i);
+            break;
         }
     }
 
@@ -193,22 +196,19 @@ int main() {
 
         while (window.pollEvent(event)) {
             switch (event.type) {
-                case sf::Event::Closed: {
-                    window.close();
-                    break;
-                }
-                case sf::Event::KeyReleased: {
-                    if (event.key.code == sf::Keyboard::Key::Left || event.key.code == sf::Keyboard::Key::Right) {
-                        sf::IntRect rect = player.sprite.getTextureRect();
-                        rect.left = 0;
-                        player.sprite.setTextureRect(rect);
-                    }
+            case sf::Event::Closed: {
+                window.close();
+                break;
+            }
+            case sf::Event::KeyReleased: {
+                if (event.key.code == sf::Keyboard::Key::Left || event.key.code == sf::Keyboard::Key::Right) {
+                    sf::IntRect rect = player.sprite.getTextureRect();
+                    rect.left = 0;
+                    player.sprite.setTextureRect(rect);
                 }
             }
+            }
         }
-
-
-
         window.clear();
         window.draw(player);
         window.draw(lvlSprite);
