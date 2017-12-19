@@ -3,7 +3,12 @@ cmake_minimum_required(VERSION 3.0.2)
 set(CMAKE_CXX_COMPILER clang++)
 
 project(oror)
-add_executable(oror src/main.cpp)
+add_executable(oror
+  src/main.cpp
+
+  src/Game.cpp
+  src/Player.cpp)
+include_directories(include)
 
 find_package(SFML 2 REQUIRED COMPONENTS audio graphics window system network)
 include_directories(${SFML_INCLUDE_DIR})
