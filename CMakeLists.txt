@@ -8,7 +8,8 @@ add_executable(oror
   src/main.cpp
 
   src/Game.cpp
-  src/Player.cpp)
+  src/Player.cpp
+  src/Utils.cpp)
 include_directories(include)
 
 find_package(SFML 2 REQUIRED COMPONENTS audio graphics window system network)

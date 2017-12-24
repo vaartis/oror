@@ -21,7 +21,7 @@ Game::Game() : window(sf::VideoMode(1280, 720), "RoRoR"), player(window, lvlMapS
 
 void Game::fillLevelTexture() {
     lvlTexture.create(25 * tileSize, 25 * tileSize);
-    clearTexture(lvlTexture);
+    Utils::clearTexture(lvlTexture);
 
     int j = 0, i = 0;
     for (int p = 0; p < lvlMapStr.length(); p++) {
@@ -78,12 +78,6 @@ void Game::run() {
 
         window.display();
     }
-}
-
-void Game::clearTexture(sf::Texture &t) {
-    sf::Vector2u size = t.getSize();
-    std::vector<sf::Uint8> data(size.x * size.y * 4, 0);
-    t.update(data.data());
 }
 
 bool Game::onSolidGround(const std::string &lvlMap,
