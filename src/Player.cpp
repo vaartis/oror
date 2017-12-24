@@ -90,12 +90,12 @@ void Player::everyFrame() {
 
     sf::FloatRect pos = sprite.getGlobalBounds();
     //detect collision with the level
-    float bY = pos.top + pos.height;
-    float blX = pos.left;
-    float brX = pos.left + 16;
+    float botY = pos.top + pos.height;
+    float botLX = pos.left;
+    float botRX = pos.left + 16;
 
-    if (Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(blX, bY)) ||
-        Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(brX, bY))) {
+    if (Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(botLX, botY)) ||
+        Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(botRX, botY))) {
         isJumping = false;
         velocity.y = 0;
     } else {
@@ -103,7 +103,7 @@ void Player::everyFrame() {
     }
 
     // detect fall through the floor
-    if (std::floor(bY) >= 500) {
+    if (std::floor(botY) >= 500) {
         sprite.setPosition(spawn.x, spawn.y - pos.height);
     }
 }

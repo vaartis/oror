@@ -66,7 +66,9 @@ void Game::run() {
                     rect.left = 0;
                     player.sprite.setTextureRect(rect);
                 }
+                break;
             }
+            default: { /* Nothing */ }
             }
         }
         window.clear();
