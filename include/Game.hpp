@@ -18,15 +18,15 @@ public:
     static bool onSolidGround(const std::string &lvlMap, int lvlPitch, const sf::Vector2f &point);
 private:
     const std::string lvlMapStr =
-"######                   \
-     #   p               \
-     #                   \
-     #                   \
-     #                   \
-     #                   \
-     #                   \
-     ###########|########\
-     #          |        \
+"######                  #\
+     #   p              #\
+     #                  #\
+     #                  #\
+     #                  #\
+     #                  #\
+     #                  #\
+     ##########||########\
+     #         ||        \
      ####################";
 
     sf::RenderWindow window;

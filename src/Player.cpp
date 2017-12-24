@@ -4,8 +4,9 @@
 
 #include "Player.hpp"
 #include "Game.hpp"
+#include "Utils.hpp"
 
-Player::Player(sf::RenderWindow &wnd, const std::string &lvlMap) : window(wnd), lvlMapStr(lvlMap) {
+Player::Player(sf::RenderWindow &wnd, const std::string &lvlMap) : lvlMapStr(lvlMap), window(wnd) {
     fullGirl.loadFromFile("girl.png");
     sprite.setTexture(fullGirl);
 
@@ -28,46 +29,54 @@ void Player::jump() {
     }
 }
 
+void Player::walk(WalkDirection walkDirection) {
+    const int frameCount = 4; // FIXME
+
+    if (walkDirection == WalkDirection::Right) {
+        sprite.setOrigin({0, 0});
+        sprite.setScale({1, 1});
+    } else {
+        // Mirror the sprite, so it will seem like we are walking to the left
+        sprite.setOrigin({sprite.getLocalBounds().width, 0});
+        sprite.setScale({-1,1});
+    }
+
+    if (walkAnimationTimer.getElapsedTime().asSeconds() >= 0.1) {
+        sf::IntRect rect = sprite.getTextureRect();
+        if (rect.left == 47 * frameCount) {
+            rect.left = 0;
+        } else {
+            rect.left = 47 * ((rect.left / 47) + 1);
+        }
+        sprite.setTextureRect(rect);
+
+        walkAnimationTimer.restart();
+    }
+
+    sf::FloatRect pos = sprite.getGlobalBounds();
+
+    float rightX = pos.left + pos.width;
+    float leftX = pos.left;
+    float topY = pos.top;
+    float botY = pos.top + pos.height;
+
+    if (walkDirection == WalkDirection::Right) {
+        if (!(Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(rightX, topY)))) {
+            move(3, 0);
+        }
+    } else {
+        if (!(Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(leftX, topY)))) {
+            move(-3, 0);
+        }
+    }
+}
+
 void Player::everyFrame() {
     using SKK = sf::Keyboard::Key;
 
     std::map<sf::Keyboard::Key, std::function<void()>> keyActions {
-        {SKK::Right, [&]() {
-                         sprite.setOrigin({0, 0});
-                         sprite.setScale({1, 1});
-
-                         if (walkAnimationTimer.getElapsedTime().asSeconds() >= 0.1) {
-                             sf::IntRect rect = sprite.getTextureRect();
-                             if (rect.left == 47 * 4) {
-                                 rect.left = 0;
-                             } else {
-                                 rect.left = 47 * ((rect.left / 47) + 1);
-                             }
-                             sprite.setTextureRect(rect);
-
-                             walkAnimationTimer.restart();
-                         }
-
-                         move(3, 0);
-                     }},
-        {SKK::Left, [&]() {
-                        sprite.setOrigin({sprite.getLocalBounds().width, 0});
-                        sprite.setScale({-1, 1});
-
-                        if (walkAnimationTimer.getElapsedTime().asSeconds() >= 0.1) {
-                            sf::IntRect rect = sprite.getTextureRect();
-                            if (rect.left == 47 * 4) {
-                                rect.left = 0;
-                            } else {
-                                rect.left = 47 * ((rect.left / 47) + 1);
-                            }
-                            sprite.setTextureRect(rect);
-
-                            walkAnimationTimer.restart();
-                        }
-
-                        move(-3, 0);
-                    }}
+        {SKK::Right, [&]() { walk(WalkDirection::Right); }},
+        {SKK::Left, [&]() { walk(WalkDirection::Left); }}
     };
 
     for (const auto &kv : keyActions) {

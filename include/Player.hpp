@@ -26,5 +26,11 @@ public:
 
     void jump();
 
+    enum class WalkDirection {
+        Left,
+        Right
+    };
+    void walk(WalkDirection walkDirection);
+
     void everyFrame();
 };
