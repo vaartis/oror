@@ -4,7 +4,10 @@
 
 #include "Game.hpp"
 
-Game::Game() : window(sf::VideoMode(1280, 720), "RoRoR"), player(window, lvlMapStr) {
+Game::Game()
+    : window(sf::VideoMode(1280, 720), "RoRoR")
+    , player(window, lvlMapStr)
+{
     window.setFramerateLimit(60);
 
     spritesheet.loadFromFile("spritesheet.png");
