@@ -59,19 +59,16 @@ void Player::walk(WalkDirection walkDirection) {
 
     sf::FloatRect pos = sprite.getGlobalBounds();
 
-    float rightX = pos.left + pos.width;
-    float leftX = pos.left;
-    float topY = pos.top;
-    float botY = pos.top + pos.height;
+    float topY = pos.top,
+        botY = pos.top + pos.height;
+    float midY = Utils::average({topY, botY});
 
-    if (walkDirection == WalkDirection::Right) {
-        if (!(game.level.onSolidGround(sf::Vector2f(rightX, topY)))) {
-            move(3, 0);
-        }
-    } else {
-        if (!(game.level.onSolidGround(sf::Vector2f(leftX, topY)))) {
-            move(-3, 0);
-        }
+    float sideX = (walkDirection == WalkDirection::Right) ? (pos.left + pos.width) : pos.left;
+    int moveXCount = (walkDirection == WalkDirection::Right) ? 3 : -3;
+
+    if (!(game.level.onSolidGround({sideX, topY}) ||
+          game.level.onSolidGround({sideX, midY}))) {
+        move(moveXCount, 0);
     }
 }
 
