@@ -32,6 +32,7 @@ public:
 
     void everyFrame();
 private:
+    sf::IntRect rect; // player sprite rect
     sf::Clock walkAnimationTimer;
     const Game &game;
 };

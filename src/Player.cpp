@@ -14,7 +14,7 @@ Player::Player(sf::RenderWindow &wnd, Game &game)
     fullGirl.loadFromFile("girl.png");
     sprite.setTexture(fullGirl);
 
-    sf::IntRect rect(0, 0, 47, 53);
+    rect = sf::IntRect(0, 0, 47, 53);
     sprite.setTextureRect(rect);
 }
 
@@ -35,6 +35,7 @@ void Player::jump() {
 
 void Player::walk(WalkDirection walkDirection) {
     const int frameCount = 4; // FIXME
+    const int spriteWidth = rect.width;
 
     if (walkDirection == WalkDirection::Right) {
         sprite.setOrigin({0, 0});
@@ -47,10 +48,10 @@ void Player::walk(WalkDirection walkDirection) {
 
     if (walkAnimationTimer.getElapsedTime().asSeconds() >= 0.1) {
         sf::IntRect rect = sprite.getTextureRect();
-        if (rect.left == 47 * frameCount) {
+        if (rect.left == spriteWidth * frameCount) {
             rect.left = 0;
         } else {
-            rect.left = 47 * ((rect.left / 47) + 1);
+            rect.left = spriteWidth * ((rect.left / spriteWidth) + 1);
         }
         sprite.setTextureRect(rect);
 
@@ -91,20 +92,31 @@ void Player::everyFrame() {
 
     sf::FloatRect pos = sprite.getGlobalBounds();
     //detect collision with the level
-    float botY = pos.top + pos.height;
-    float botLX = pos.left;
-    float botRX = pos.left + 16;
+    float TY = pos.top;
+    float BY = pos.top + pos.height;
+    float LX = pos.left;
+    float RX = pos.left + 16;
 
-    if (game.level.isSolidGround(sf::Vector2f(botLX, botY)) ||
-        game.level.isSolidGround(sf::Vector2f(botRX, botY))) {
+    // check fall collision
+    if (game.level.isSolidGround(sf::Vector2f(LX, BY)) ||
+        game.level.isSolidGround(sf::Vector2f(RX, BY))) {
         isJumping = false;
         velocity.y = 0;
+        sf::Vector2i tile = game.level.clampToTile({LX, BY});
+        sprite.setPosition(LX, tile.y - pos.height);
     } else {
         velocity.y += 0.3;
     }
 
+    // check headbutt collision
+    if (game.level.isSolidGround(sf::Vector2f(LX, TY - 1)) ||
+        game.level.isSolidGround(sf::Vector2f(RX, TY - 1))) {
+        move(0, -velocity.y + 0.1);
+        velocity.y = 0;
+    }
+
     // detect fall through the floor
-    if (std::floor(botY) >= 500) {
+    if (std::floor(BY) >= 500) {
         sprite.setPosition(spawn.x, spawn.y - pos.height);
     }
 }
