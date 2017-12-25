@@ -61,3 +61,11 @@ bool Level::isSolidGround(const sf::Vector2f &point) const {
 
     return mapString[y * pitch + x] == '#';
 }
+
+sf::Vector2i Level::clampToTile(const sf::Vector2f &point) const {
+    int32_t x = std::floor(point.x / tileSize);
+    int32_t y = std::floor(point.y / tileSize);
+
+    int32_t s = static_cast<int32_t>(tileSize);
+    return {x * s, y * s};
+}
