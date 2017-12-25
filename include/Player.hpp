@@ -2,11 +2,11 @@
 
 #include <SFML/Graphics.hpp>
 
+class Game;
+
 class Player : public sf::Drawable {
-private:
-    sf::Clock walkAnimationTimer;
 public:
-    const std::string &lvlMapStr;
+    Player(sf::RenderWindow &wnd, Game &game);
 
     sf::RenderWindow &window;
 
@@ -17,8 +17,6 @@ public:
     sf::Vector2i spawn {0, 0};
 
     bool isJumping = true;
-
-    Player(sf::RenderWindow &wnd, const std::string &lvlMap);
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
@@ -33,4 +31,7 @@ public:
     void walk(WalkDirection walkDirection);
 
     void everyFrame();
+private:
+    sf::Clock walkAnimationTimer;
+    const Game &game;
 };

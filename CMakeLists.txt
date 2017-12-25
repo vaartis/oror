@@ -8,6 +8,7 @@ add_executable(oror
   src/main.cpp
 
   src/Game.cpp
+  src/Level.cpp
   src/Player.cpp
   src/Utils.cpp)
 include_directories(include)

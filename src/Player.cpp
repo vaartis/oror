@@ -1,3 +1,4 @@
+#include <cmath>
 #include <functional>
 
 #include <SFML/Graphics.hpp>
@@ -6,7 +7,10 @@
 #include "Game.hpp"
 #include "Utils.hpp"
 
-Player::Player(sf::RenderWindow &wnd, const std::string &lvlMap) : lvlMapStr(lvlMap), window(wnd) {
+Player::Player(sf::RenderWindow &wnd, Game &game)
+    : window(wnd)
+    , game(game)
+ {
     fullGirl.loadFromFile("girl.png");
     sprite.setTexture(fullGirl);
 
@@ -61,11 +65,11 @@ void Player::walk(WalkDirection walkDirection) {
     float botY = pos.top + pos.height;
 
     if (walkDirection == WalkDirection::Right) {
-        if (!(Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(rightX, topY)))) {
+        if (!(game.level.onSolidGround(sf::Vector2f(rightX, topY)))) {
             move(3, 0);
         }
     } else {
-        if (!(Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(leftX, topY)))) {
+        if (!(game.level.onSolidGround(sf::Vector2f(leftX, topY)))) {
             move(-3, 0);
         }
     }
@@ -94,8 +98,8 @@ void Player::everyFrame() {
     float botLX = pos.left;
     float botRX = pos.left + 16;
 
-    if (Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(botLX, botY)) ||
-        Game::onSolidGround(lvlMapStr, 25, sf::Vector2f(botRX, botY))) {
+    if (game.level.onSolidGround(sf::Vector2f(botLX, botY)) ||
+        game.level.onSolidGround(sf::Vector2f(botRX, botY))) {
         isJumping = false;
         velocity.y = 0;
     } else {
