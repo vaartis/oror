@@ -42,7 +42,7 @@ void Player::walk(WalkDirection walkDirection) {
     } else {
         // Mirror the sprite, so it will seem like we are walking to the left
         sprite.setOrigin({sprite.getLocalBounds().width, 0});
-        sprite.setScale({-1,1});
+        sprite.setScale({-1, 1});
     }
 
     if (walkAnimationTimer.getElapsedTime().asSeconds() >= 0.1) {
@@ -66,8 +66,8 @@ void Player::walk(WalkDirection walkDirection) {
     float sideX = (walkDirection == WalkDirection::Right) ? (pos.left + pos.width) : pos.left;
     int moveXCount = (walkDirection == WalkDirection::Right) ? 3 : -3;
 
-    if (!(game.level.onSolidGround({sideX, topY}) ||
-          game.level.onSolidGround({sideX, midY}))) {
+    if (!(game.level.isSolidGround({sideX, topY}) ||
+          game.level.isSolidGround({sideX, midY}))) {
         move(moveXCount, 0);
     }
 }
@@ -95,8 +95,8 @@ void Player::everyFrame() {
     float botLX = pos.left;
     float botRX = pos.left + 16;
 
-    if (game.level.onSolidGround(sf::Vector2f(botLX, botY)) ||
-        game.level.onSolidGround(sf::Vector2f(botRX, botY))) {
+    if (game.level.isSolidGround(sf::Vector2f(botLX, botY)) ||
+        game.level.isSolidGround(sf::Vector2f(botRX, botY))) {
         isJumping = false;
         velocity.y = 0;
     } else {

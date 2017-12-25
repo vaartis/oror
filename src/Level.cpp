@@ -54,9 +54,9 @@ void Level::setLevelMapString(const std::string &map, uint32_t newPitch) {
     fillTexture();
 }
 
-bool Level::onSolidGround(const sf::Vector2f &point) const {
-    int x = std::floor(point.x / 32);
-    int y = std::floor(point.y / 32);
+bool Level::isSolidGround(const sf::Vector2f &point) const {
+    int x = std::floor(point.x / tileSize);
+    int y = std::floor(point.y / tileSize);
     if (x < 0 || y < 0) return false;
 
     return mapString[y * pitch + x] == '#';

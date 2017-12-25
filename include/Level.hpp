@@ -13,7 +13,7 @@ public:
     void setLevelMapString(const std::string &map, uint32_t pitch);
 
     /// \brief Checks if the point is on the solid ground, e.g. platform
-    bool onSolidGround(const sf::Vector2f &point) const;
+    bool isSolidGround(const sf::Vector2f &point) const;
 
     sf::Vector2i playerSpawn {0, 0};
     sf::Sprite sprite;
