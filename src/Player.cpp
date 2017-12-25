@@ -16,10 +16,16 @@ Player::Player(sf::RenderWindow &wnd, Game &game)
 
     rect = sf::IntRect(0, 0, 47, 53);
     sprite.setTextureRect(rect);
+
+    debugHitbox.setSize({47, 53});
+    debugHitbox.setFillColor(sf::Color::Transparent);
+    debugHitbox.setOutlineColor(sf::Color::Red);
+    debugHitbox.setOutlineThickness(0.5);
 }
 
 void Player::draw(sf::RenderTarget &target, sf::RenderStates states) const {
     target.draw(sprite);
+    target.draw(debugHitbox);
 }
 
 void Player::move(float x, float y) {
@@ -119,4 +125,6 @@ void Player::everyFrame() {
     if (std::floor(BY) >= 500) {
         sprite.setPosition(spawn.x, spawn.y - pos.height);
     }
+
+    debugHitbox.setPosition(sprite.getPosition());
 }

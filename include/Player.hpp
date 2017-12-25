@@ -12,6 +12,7 @@ public:
 
     sf::Texture fullGirl;
     sf::Sprite sprite;
+    sf::RectangleShape debugHitbox;
 
     sf::Vector2f velocity;
     sf::Vector2i spawn {0, 0};
