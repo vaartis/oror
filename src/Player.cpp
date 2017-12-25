@@ -70,7 +70,7 @@ void Player::walk(WalkDirection walkDirection) {
         botY = pos.top + pos.height;
     float midY = Utils::average({topY, botY});
 
-    float sideX = (walkDirection == WalkDirection::Right) ? (pos.left + pos.width) : pos.left;
+    float sideX = (walkDirection == WalkDirection::Right) ? (pos.left + pos.width) : pos.left - 1;
     int moveXCount = (walkDirection == WalkDirection::Right) ? 3 : -3;
 
     if (!(game.level.isSolidGround({sideX, topY}) ||
