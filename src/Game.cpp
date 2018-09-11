@@ -29,11 +29,19 @@ void Game::run() {
                 break;
             }
             case sf::Event::KeyReleased: {
-                if (event.key.code == sf::Keyboard::Key::Left || event.key.code == sf::Keyboard::Key::Right) {
+                switch (event.key.code) {
+                case sf::Keyboard::Key::Left:
+                case sf::Keyboard::Key::Right: {
                     sf::IntRect rect = player.sprite.getTextureRect();
                     rect.left = 0;
                     player.sprite.setTextureRect(rect);
+                    break;
                 }
+                case sf::Keyboard::Key::R:
+                    player.sprite.setPosition(player.spawn.x, player.spawn.y);
+                    break;
+                }
+
                 break;
             }
             default: { /* Nothing */ }
