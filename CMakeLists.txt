@@ -13,8 +13,7 @@ add_executable(oror
   src/Utils.cpp)
 include_directories(include)
 
-find_package(SFML 2 REQUIRED COMPONENTS audio graphics window system network)
-include_directories(${SFML_INCLUDE_DIR})
-target_link_libraries(oror ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
+find_package(SFML 2.5 REQUIRED COMPONENTS audio graphics window system network)
+target_link_libraries(oror sfml-graphics)
 
 add_definitions(-std=c++17 -g)
