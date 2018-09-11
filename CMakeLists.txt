@@ -16,5 +16,3 @@ include_directories(include)
 
 find_package(SFML 2.5 REQUIRED COMPONENTS audio graphics window system network)
 target_link_libraries(oror sfml-graphics)
-
-add_definitions(-g)
