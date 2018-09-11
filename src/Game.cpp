@@ -5,7 +5,7 @@
 #include "Game.hpp"
 
 Game::Game()
-    : window(sf::VideoMode(1280, 720), "RoRoR")
+    : window(sf::VideoMode(1280, 720), "ORoR")
     , player(window, *this)
     , level("spritesheet.png", {0, 160}, {32, 384}, {90, 82, 104}, 32)
 
