@@ -4,6 +4,8 @@ set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
+add_subdirectory(chibi_bindings)
+
 project(oror)
 add_executable(oror
   src/main.cpp
@@ -15,4 +17,4 @@ add_executable(oror
 include_directories(include)
 
 find_package(SFML 2.5 REQUIRED COMPONENTS audio graphics window system network)
-target_link_libraries(oror sfml-graphics)
+target_link_libraries(oror sfml-graphics chibi_bindings)
