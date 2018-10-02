@@ -1,0 +1,4 @@
+[submodule "chibi_bindings"]
+	path = chibi_bindings
+	url = https://github.com/vaartis/chibi_bindings
+    branch = master
