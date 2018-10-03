@@ -1,10 +1,13 @@
 #include <cmath>
+#include <vector>
 
 #include "imgui.h"
 #include "imgui-SFML.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
+
+#include "Chibi.hpp"
 
 #include "Game.hpp"
 
@@ -24,6 +27,10 @@ Game::Game()
 
 void Game::run() {
     sf::Clock deltaClock;
+    Chibi chibi;
+
+    std::string repl_output;
+    std::string str_to_eval;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -61,8 +68,17 @@ void Game::run() {
         ImGui::SFML::Update(window, deltaClock.restart());
 
         ImGui::Begin("Debug");
-        ImGui::Bullet();
-        ImGui::Text("hey");
+
+        ImGui::InputTextMultiline("Output", repl_output.data(), repl_output.size(), sf::Vector2f({300, ImGui::GetTextLineHeight() * 16}), ImGuiInputTextFlags_ReadOnly);
+
+        char st[256];
+        ImGui::InputText("##eval_code", st, 256);
+        if (ImGui::Button("Eval")) {
+            std::string result = chibi.eval_string(st).dump_to_string();
+
+            std::copy(result.begin(), result.end(), std::back_inserter(repl_output));
+        }
+
         ImGui::End();
 
         window.clear();
@@ -76,4 +92,6 @@ void Game::run() {
 
         window.display();
     }
+
+    ImGui::SFML::Shutdown();
 }
