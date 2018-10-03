@@ -1,6 +1,10 @@
 #include <cmath>
 
+#include "imgui.h"
+#include "imgui-SFML.h"
+
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Clock.hpp>
 
 #include "Game.hpp"
 
@@ -11,18 +15,24 @@ Game::Game()
 
 {
     window.setFramerateLimit(60);
+    ImGui::SFML::Init(window);
+
     level.setLevelMapString(lvlMapStr, 100);
     player.spawn = level.playerSpawn;
     player.sprite.setPosition(player.spawn.x, player.spawn.y);
 }
 
 void Game::run() {
+    sf::Clock deltaClock;
+
     while (window.isOpen()) {
         sf::Event event;
 
         player.everyFrame();
 
         while (window.pollEvent(event)) {
+            ImGui::SFML::ProcessEvent(event);
+
             switch (event.type) {
             case sf::Event::Closed: {
                 window.close();
@@ -47,12 +57,22 @@ void Game::run() {
             default: { /* Nothing */ }
             }
         }
+
+        ImGui::SFML::Update(window, deltaClock.restart());
+
+        ImGui::Begin("Debug");
+        ImGui::Bullet();
+        ImGui::Text("hey");
+        ImGui::End();
+
         window.clear();
         window.draw(player);
         window.draw(level.sprite);
 
         sf::View view(player.sprite.getPosition(), sf::Vector2f(640, 480));
         window.setView(view);
+
+        ImGui::SFML::Render(window);
 
         window.display();
     }

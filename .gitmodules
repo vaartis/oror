@@ -2,3 +2,14 @@
 	path = deps/chibi_bindings
 	url = https://github.com/vaartis/chibi_bindings
 	branch = master
+[submodule "sfml"]
+	path = deps/sfml
+	url = https://github.com/SFML/SFML
+[submodule "imgui-sfml"]
+	path = deps/imgui-sfml
+	url = https://github.com/eliasdaler/imgui-sfml
+    branch = modern-cmake
+[submodule "imgui"]
+	path = deps/imgui
+	url = https://github.com/ocornut/imgui
+    branch = master
