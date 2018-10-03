@@ -17,4 +17,10 @@ add_executable(oror
 include_directories(include)
 
 find_package(SFML 2.4 REQUIRED COMPONENTS audio graphics window system network)
-target_link_libraries(oror sfml-graphics chibi_bindings)
+target_link_libraries(oror
+  sfml-graphics
+  sfml-window
+  sfml-system
+
+  chibi_bindings
+ )
