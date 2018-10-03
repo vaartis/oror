@@ -4,7 +4,7 @@ set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
-add_subdirectory(chibi_bindings)
+add_subdirectory(deps/chibi_bindings)
 
 project(oror)
 add_executable(oror
