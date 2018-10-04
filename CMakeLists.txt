@@ -8,6 +8,8 @@ project(oror)
 add_executable(oror
   src/main.cpp
 
+  src/Entity.cpp
+
   src/Game.cpp
   src/Level.cpp
   src/Player.cpp
