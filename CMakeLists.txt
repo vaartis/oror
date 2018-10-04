@@ -26,8 +26,8 @@ target_link_libraries(oror
 add_subdirectory(deps/chibi_bindings)
 target_link_libraries(oror chibi_bindings)
 
-set(IMGUI_ROOT ${CMAKE_SOURCE_DIR}/deps/imgui)
-set(IMGUI_SFML_FIND_SFML NO)
-set(SFML_ROOT ${CMAKE_SOURCE_DIR}/deps/sfml)
+set(IMGUI_ROOT ${CMAKE_SOURCE_DIR}/deps/imgui CACHE PATH "ImGui root")
+set(SFML_ROOT ${CMAKE_SOURCE_DIR}/deps/sfml CACHE PATH "SFML root")
+set(IMGUI_SFML_FIND_SFML NO CACHE BOOL "Don't search for SFML" FORCE)
 add_subdirectory(deps/imgui-sfml)
 target_link_libraries(oror ImGui-SFML::ImGui-SFML)
