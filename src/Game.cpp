@@ -10,6 +10,8 @@
 #include "Chibi.hpp"
 
 #include "Game.hpp"
+#include "Entity.hpp"
+#include "components.hpp"
 
 Game::Game()
     : window(sf::VideoMode(1280, 720), "ORoR")
@@ -21,19 +23,49 @@ Game::Game()
     ImGui::SFML::Init(window);
 
     level.setLevelMapString(lvlMapStr, 100);
+
+    // Some scheme preparations
+
+    // FIXME, add a proper path setting here
+    chibi.add_module_directory("./src/scm");
+
+    chibi.eval_string("(import (srfi 99) (entities))").dump_to_port();
+
+    // Entity creation
+
+    Entity player_entity = Entity(chibi, chibi.env_ref("player-entity"));
+    entities.emplace(nextEntityId++, player_entity);
+
+    // System creation
+
+    GraphicsSystem grSystem(window);
+    systems.emplace_back(grSystem);
+
     player.spawn = level.playerSpawn;
     player.sprite.setPosition(player.spawn.x, player.spawn.y);
 }
 
 void Game::run() {
     sf::Clock deltaClock;
-    Chibi chibi;
 
     std::string repl_output;
     std::string str_to_eval;
 
     while (window.isOpen()) {
         sf::Event event;
+
+        for (auto &entity_pair : entities) {
+            auto [entityId, entity_] = entity_pair;
+            Entity &entity = entity_;
+
+            for (auto &sys : systems) {
+                if (auto grSys = dynamic_cast<GraphicsSystem *>(&sys.get())) {
+                    if (auto trComp = entity.getComponent<TransformComponent>(); trComp.has_value()) {
+                        grSys->run(trComp.value());
+                    }
+                }
+            }
+        }
 
         player.everyFrame();
 

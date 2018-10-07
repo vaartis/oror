@@ -1,41 +1,41 @@
+#pragma once
+
 #include <map>
 #include <vector>
+#include <iostream>
 #include <typeindex>
 #include <functional>
 
-#include "components/Component.hpp"
+#include "components.hpp"
 
 class Entity {
 public:
+    Entity(Chibi &chibi, SExp entity_bject);
 
     /** Get the last added component of this type that was added. */
     template <typename T>
-    std::optional<T> getComponent();
+    std::optional<std::decay_t<T>> getComponent();
 
     /** Get all the components of this type. */
     template <typename T>
     std::vector<T> getComponents();
 
-    template <typename T>
-    void addComponent(T &component);
+    void addComponent(Component &component);
 
 private:
     std::string type;
-    std::multimap<std::type_index, std::reference_wrapper<Component>> components;
+    std::unordered_map<std::type_index, std::reference_wrapper<Component>> components;
 };
 
 template <typename T>
-void Entity::addComponent(T &component) {
-    components.emplace(component);
-}
+std::optional<std::decay_t<T>> Entity::getComponent() {
+    auto component_i = components.find(std::type_index(typeid(T)));
 
-template <typename T>
-std::optional<T> Entity::getComponent() {
-    auto component = components.find(typeid(T));
-
-    return component != components.end()
-        ? std::make_optional(component)
-        : std::nullopt;
+    if (component_i != components.end()) {
+        return dynamic_cast<T &>(component_i->second.get());
+    } else {
+        return std::nullopt;
+    }
 }
 
 
@@ -43,7 +43,7 @@ template <typename T>
 std::vector<T> Entity::getComponents() {
     std::vector<std::reference_wrapper<Component>> found_components;
 
-    auto range = components.equal_range(typeid(T));
+    auto range = components.equal_range(std::type_index(typeid(T)));
 
     std::copy(range.first, range.second, std::back_inserter(found_components));
 

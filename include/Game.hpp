@@ -5,6 +5,8 @@
 #include "Level.hpp"
 #include "Player.hpp"
 #include "Utils.hpp"
+#include "Entity.hpp"
+#include "systems.hpp"
 
 /// \brief Main game class
 class Game {
@@ -13,6 +15,12 @@ public:
     void run();
     Level level;
 private:
+    long nextEntityId = 0;
+    std::map<long, std::reference_wrapper<Entity>> entities;
+    std::vector<std::reference_wrapper<System>> systems;
+
+    Chibi chibi;
+
     const std::string lvlMapStr =
 "\
 ######                                                                                    #         \
