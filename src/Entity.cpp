@@ -19,16 +19,18 @@ Entity::Entity(Chibi &chibi, SExp entity_object) {
                             auto comp_name = *rtd_name.apply(comp_rtd)->to<Symbol>();
 
                             if (comp_name == "graphics-component") {
-                                auto grComp = GraphicsComponent(RTD(chibi, comp_rtd), component);
-                                addComponent(grComp);
+                                addComponent(
+                                    std::make_unique<GraphicsComponent>(RTD(chibi, comp_rtd), component)
+                                );
                             } else if (comp_name == "transform-component") {
-                                auto trComp = TransformComponent(RTD(chibi, comp_rtd), component);
-                                addComponent(trComp);
+                                addComponent(
+                                    std::make_unique<TransformComponent>(RTD(chibi, comp_rtd), component)
+                                );
                             }
                         }
     );
 }
 
-void Entity::addComponent(Component &component) {
-    components.emplace(std::type_index(typeid(component)), component);
+void Entity::addComponent(std::unique_ptr<Component> component) {
+    components.emplace(std::type_index(typeid(component)), std::move(component));
 }

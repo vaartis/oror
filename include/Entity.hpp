@@ -5,6 +5,7 @@
 #include <iostream>
 #include <typeindex>
 #include <functional>
+#include <memory>
 
 #include "components.hpp"
 
@@ -14,31 +15,34 @@ public:
 
     /** Get the last added component of this type that was added. */
     template <typename T>
-    std::optional<std::decay_t<T>> getComponent();
+    std::optional<T *> getComponent();
 
     /** Get all the components of this type. */
+    /*
     template <typename T>
     std::vector<T> getComponents();
+    */
 
-    void addComponent(Component &component);
+    void addComponent(std::unique_ptr<Component> component);
 
 private:
     std::string type;
-    std::unordered_map<std::type_index, std::reference_wrapper<Component>> components;
+    std::multimap<std::type_index, std::unique_ptr<Component>> components;
 };
 
 template <typename T>
-std::optional<std::decay_t<T>> Entity::getComponent() {
+std::optional<T *> Entity::getComponent() {
     auto component_i = components.find(std::type_index(typeid(T)));
 
     if (component_i != components.end()) {
-        return dynamic_cast<T &>(component_i->second.get());
+        return dynamic_cast<T *>(component_i->second.get());
     } else {
         return std::nullopt;
     }
 }
 
 
+/*
 template <typename T>
 std::vector<T> Entity::getComponents() {
     std::vector<std::reference_wrapper<Component>> found_components;
@@ -49,3 +53,4 @@ std::vector<T> Entity::getComponents() {
 
     return found_components;
 }
+*/

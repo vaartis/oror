@@ -38,8 +38,8 @@ Game::Game()
 
     // System creation
 
-    GraphicsSystem grSystem(window);
-    systems.emplace_back(grSystem);
+    auto grSystem = std::make_unique<GraphicsSystem>(window);
+    systems.emplace_back(std::move(grSystem));
 
     player.spawn = level.playerSpawn;
     player.sprite.setPosition(player.spawn.x, player.spawn.y);
@@ -59,7 +59,7 @@ void Game::run() {
             Entity &entity = entity_;
 
             for (auto &sys : systems) {
-                if (auto grSys = dynamic_cast<GraphicsSystem *>(&sys.get())) {
+                if (auto grSys = dynamic_cast<GraphicsSystem *>(sys.get())) {
                     if (auto trComp = entity.getComponent<TransformComponent>(); trComp.has_value()) {
                         grSys->run(trComp.value());
                     }

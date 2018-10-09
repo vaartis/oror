@@ -17,7 +17,7 @@ public:
 private:
     long nextEntityId = 0;
     std::map<long, std::reference_wrapper<Entity>> entities;
-    std::vector<std::reference_wrapper<System>> systems;
+    std::vector<std::unique_ptr<System>> systems;
 
     Chibi chibi;
 
