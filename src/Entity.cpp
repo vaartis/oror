@@ -1,6 +1,6 @@
-#include <unordered_map>
 #include <functional>
 #include <iostream>
+#include <cassert>
 
 #include "Entity.hpp"
 
@@ -10,8 +10,9 @@ Entity::Entity(Chibi &chibi, SExp entity_object) {
     SExp record_rtd = chibi.env_ref("record-rtd");
     SExp scm_map = chibi.env_ref("map");
 
-    if (!entity_rtd.obj_is(entity_object))
+    if (!entity_rtd.obj_is(entity_object)) {
         throw std::invalid_argument("Trying to create an entity from a non-entity type");
+    }
 
     SExp components = entity_rtd.get_field_from(entity_object, "components").value();
     components.for_each([&](SExp component) {
@@ -19,11 +20,11 @@ Entity::Entity(Chibi &chibi, SExp entity_object) {
                             auto comp_name = *rtd_name.apply(comp_rtd)->to<Symbol>();
 
                             if (comp_name == "graphics-component") {
-                                addComponent(
+                                add_component(
                                     std::make_unique<GraphicsComponent>(RTD(chibi, comp_rtd), component)
                                 );
                             } else if (comp_name == "transform-component") {
-                                addComponent(
+                                add_component(
                                     std::make_unique<TransformComponent>(RTD(chibi, comp_rtd), component)
                                 );
                             }
@@ -31,6 +32,20 @@ Entity::Entity(Chibi &chibi, SExp entity_object) {
     );
 }
 
-void Entity::addComponent(std::unique_ptr<Component> component) {
-    components.emplace(std::type_index(typeid(component)), std::move(component));
+Entity::Entity(Entity&& other)
+    : type(other.type)
+    , components(std::move(other.components))
+{}
+
+Entity& Entity::operator=(Entity&& other)
+{
+    type = other.type;
+    components = std::move(other.components);
+    return *this;
+}
+
+template <typename T>
+void Entity::add_component(std::unique_ptr<T> &&component) {
+    assert(component != nullptr);
+    components.insert({ typeid(T), std::move(component) });
 }

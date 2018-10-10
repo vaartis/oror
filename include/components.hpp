@@ -6,8 +6,8 @@
 #include "RTD.hpp"
 
 class Component {
-public:    
-    virtual ~Component() { }
+public:
+    virtual ~Component() = default;
 };
 
 class GraphicsComponent : public Component {
@@ -18,7 +18,7 @@ public:
 
     std::string filename;
 
-    virtual ~GraphicsComponent() { }
+    virtual ~GraphicsComponent() = default;
 };
 
 class TransformComponent : public Component {
@@ -31,5 +31,5 @@ public:
     sexp_sint_t x;
     sexp_sint_t y;
 
-    virtual ~TransformComponent() { }
+    virtual ~TransformComponent() = default;
 };

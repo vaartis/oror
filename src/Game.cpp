@@ -33,8 +33,8 @@ Game::Game()
 
     // Entity creation
 
-    Entity player_entity = Entity(chibi, chibi.env_ref("player-entity"));
-    entities.emplace(nextEntityId++, player_entity);
+    Entity player_entity(chibi, chibi.env_ref("player-entity"));
+    entities.emplace(nextEntityId++, std::move(player_entity));
 
     // System creation
 
@@ -55,13 +55,11 @@ void Game::run() {
         sf::Event event;
 
         for (auto &entity_pair : entities) {
-            auto [entityId, entity_] = entity_pair;
-            Entity &entity = entity_;
-
+            auto& [id, entity] = entity_pair;
             for (auto &sys : systems) {
-                if (auto grSys = dynamic_cast<GraphicsSystem *>(sys.get())) {
-                    if (auto trComp = entity.getComponent<TransformComponent>(); trComp.has_value()) {
-                        grSys->run(trComp.value());
+                if (auto graphics_sys = dynamic_cast<GraphicsSystem *>(sys.get())) {
+                    if (auto tr_comp = entity.get_component<TransformComponent>(); tr_comp != nullptr) {
+                        graphics_sys->run(tr_comp);
                     }
                 }
             }

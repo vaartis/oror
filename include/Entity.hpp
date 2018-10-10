@@ -9,48 +9,36 @@
 
 #include "components.hpp"
 
-class Entity {
+class Entity final {
 public:
-    Entity(Chibi &chibi, SExp entity_bject);
+    Entity(Chibi &chibi, SExp entity_object);
+
+    Entity(const Entity&) = delete;
+    Entity(Entity&&);
+
+    Entity& operator=(const Entity&) = delete;
+    Entity& operator=(Entity&&);
 
     /** Get the last added component of this type that was added. */
     template <typename T>
-    std::optional<T *> getComponent();
+    T *get_component();
 
-    /** Get all the components of this type. */
-    /*
     template <typename T>
-    std::vector<T> getComponents();
-    */
-
-    void addComponent(std::unique_ptr<Component> component);
+    void add_component(std::unique_ptr<T> &&);
 
 private:
     std::string type;
-    std::multimap<std::type_index, std::unique_ptr<Component>> components;
+    std::map<std::type_index, std::unique_ptr<Component>> components;
 };
 
 template <typename T>
-std::optional<T *> Entity::getComponent() {
-    auto component_i = components.find(std::type_index(typeid(T)));
-
-    if (component_i != components.end()) {
-        return dynamic_cast<T *>(component_i->second.get());
+T *Entity::get_component() {
+    const auto& comp_it = components.find(typeid(T));
+    if (comp_it != components.end()) {
+        T* comp = dynamic_cast<T *>(comp_it->second.get());
+        assert(comp != nullptr);
+        return comp;
     } else {
-        return std::nullopt;
+        return nullptr;
     }
 }
-
-
-/*
-template <typename T>
-std::vector<T> Entity::getComponents() {
-    std::vector<std::reference_wrapper<Component>> found_components;
-
-    auto range = components.equal_range(std::type_index(typeid(T)));
-
-    std::copy(range.first, range.second, std::back_inserter(found_components));
-
-    return found_components;
-}
-*/
